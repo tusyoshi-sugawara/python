@@ -11,9 +11,9 @@ def main():
         "units" : resources.setting.units,
         "zip" : resources.setting.zipcode
     }
-    data = requests.get(resources.setting.apiurl, params=params).json()
+    data = requests.get(resources.setting.apiurl, params=params, timeout=resources.setting.timeout).json()
     output_dict = {}
-    output_dict['description'] = 'openweathermap summary data.'
+    output_dict['description'] = 'openweathermap metric summary data.'
     output_dict['readtime'] = int(datetime.timestamp(datetime.now()))
     output_dict['country'] = data["city"]["country"]
     output_dict['city'] = data["city"]["name"]

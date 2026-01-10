@@ -3,3 +3,4 @@ appid = ''
 units = 'metric'
 zipcode = '177-0031,jp'
 outputPath = './data.json'
+timeout=(3.0, 7.5)
