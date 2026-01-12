@@ -3,7 +3,6 @@ import json
 import setting
 import os
 
-from pprint import pprint
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 
@@ -12,7 +11,8 @@ def main():
     params = {
         "APPID" : os.getenv('API_KEY'),
         "units" : setting.units,
-        "zip" : setting.zipcode
+        "zip" : setting.zipcode,
+        "lang" : setting.lang
     }
     data = requests.get(setting.metricurl, params=params, timeout=setting.timeout).json()
     output_dict = {}
@@ -27,16 +27,28 @@ def main():
     for val in data["list"]:
         value_dict = {}
         value_dict['datetime'] = datetime.fromtimestamp(val["dt"], tz).strftime('%Y/%m/%d %H')
-        value_dict['weather'] = val["weather"][0]["main"]
-        value_dict['temp'] = val["main"]["temp"]
-        value_dict['feels_like'] = val["main"]["feels_like"]
-        value_dict['pressure'] = val["main"]["pressure"]
-        value_dict['humidity'] = val["main"]["humidity"]
-        value_dict['wind_deg'] = val["wind"]["deg"]
-        value_dict['wind_speed'] = val["wind"]["speed"]
+
+        weather = {}
+        weather['main'] = val["weather"][0]["main"]
+        weather['description'] = val["weather"][0]["description"]
+        weather['icon'] = val["weather"][0]["icon"]
+        value_dict['weather'] = weather
+
+        main = {}
+        main['temp'] = val["main"]["temp"]
+        main['feels_like'] = val["main"]["feels_like"]
+        main['pressure'] = val["main"]["pressure"]
+        main['humidity'] = val["main"]["humidity"]
+        value_dict['main'] = main
+
+        wind = {}
+        wind['wind_deg'] = val["wind"]["deg"]
+        wind['wind_speed'] = val["wind"]["speed"]
+        value_dict['wind'] = wind
+
         list.append(value_dict)
     output_dict['list'] = list
-    with open(setting.metricPath, 'w') as file:
+    with open(setting.metricpath, 'w') as file:
         json.dump(output_dict, file, indent=2)
 
 if __name__ == "__main__":
