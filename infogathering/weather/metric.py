@@ -1,17 +1,20 @@
 import requests
 import json
-import resources.setting
+import setting
+import os
 
 from pprint import pprint
 from datetime import datetime, timedelta, timezone
+from dotenv import load_dotenv
 
 def main():
+    load_dotenv()
     params = {
-        "APPID" : resources.setting.appid,
-        "units" : resources.setting.units,
-        "zip" : resources.setting.zipcode
+        "APPID" : os.getenv('API_KEY'),
+        "units" : setting.units,
+        "zip" : setting.zipcode
     }
-    data = requests.get(resources.setting.apiurl, params=params, timeout=resources.setting.timeout).json()
+    data = requests.get(setting.metricurl, params=params, timeout=setting.timeout).json()
     output_dict = {}
     output_dict['description'] = 'openweathermap metric summary data.'
     output_dict['readtime'] = int(datetime.timestamp(datetime.now()))
@@ -33,7 +36,7 @@ def main():
         value_dict['wind_speed'] = val["wind"]["speed"]
         list.append(value_dict)
     output_dict['list'] = list
-    with open(resources.setting.outputPath, 'w') as file:
+    with open(setting.metricPath, 'w') as file:
         json.dump(output_dict, file, indent=2)
 
 if __name__ == "__main__":
